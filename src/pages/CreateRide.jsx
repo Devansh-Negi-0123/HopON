@@ -1,6 +1,9 @@
-import { useState } from "react";
+import { useState, useContext } from "react";
+import { AuthContext } from "../context/AuthContext";
 
 export default function CreateRide() {
+  const { user } = useContext(AuthContext); // 👈 get logged-in user
+
   const [form, setForm] = useState({
     startLocation: "",
     destination: "",
@@ -10,13 +13,47 @@ export default function CreateRide() {
     price: "",
   });
 
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
+
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Ride Created:", form);
+    setError("");
+    setSuccess("");
+
+    try {
+      const res = await fetch("http://localhost:5000/rides/create", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          ...form,
+          userId: user?.id, // 👈 attach logged-in user ID
+        }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        setError(data.message || "Failed to create ride");
+        return;
+      }
+
+      setSuccess("Ride created successfully!");
+      setForm({
+        startLocation: "",
+        destination: "",
+        date: "",
+        time: "",
+        seats: "",
+        price: "",
+      });
+    } catch (err) {
+      setError("Something went wrong. Try again.");
+    }
   };
 
   return (
@@ -24,8 +61,6 @@ export default function CreateRide() {
       <h1 className="text-3xl font-bold mb-6 text-gray-800">Create Ride</h1>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-
-        {/* ---------------------- FORM CARD ---------------------- */}
         <div
           className="bg-white p-6 rounded-xl shadow-lg"
           style={{
@@ -36,8 +71,10 @@ export default function CreateRide() {
         >
           <h2 className="text-xl font-semibold mb-4 text-gray-700">Ride Details</h2>
 
-          <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+          {error && <p className="text-red-600 mb-2">{error}</p>}
+          {success && <p className="text-green-600 mb-2">{success}</p>}
 
+          <form onSubmit={handleSubmit} className="flex flex-col gap-4">
             <div>
               <label className="block mb-1 font-medium text-gray-700">Starting Location</label>
               <input
@@ -130,7 +167,6 @@ export default function CreateRide() {
           </form>
         </div>
 
-        {/* ---------------------- ROUTE PREVIEW CARD ---------------------- */}
         <div
           className="bg-white p-6 rounded-xl shadow-lg"
           style={{
@@ -142,14 +178,12 @@ export default function CreateRide() {
           <h2 className="text-xl font-semibold mb-4 text-gray-700">Route Preview</h2>
 
           <div className="border rounded-lg h-64 flex items-center justify-center text-gray-500">
-            {/* Placeholder: Replace with Map / Steps / Polyline Renderer later */}
             <div className="text-center">
               <div className="text-lg font-semibold">Route will appear here</div>
               <p className="text-sm mt-1">Map or step-by-step route preview</p>
             </div>
           </div>
 
-          {/* Live route text preview */}
           <div className="mt-6">
             <h3 className="font-semibold text-gray-700 mb-2">Selected Route</h3>
 
