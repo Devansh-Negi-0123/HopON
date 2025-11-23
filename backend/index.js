@@ -7,6 +7,8 @@ import authRoutes from "./routes/auth.js";
 import rideRoutes from "./routes/rideRoutes.js";
 import userRoutes from "./routes/users.js";
 import savedRidesRouter from "./routes/savedRides.js";
+import geocodeRoute from "./routes/geocode.js";
+import routeRouter from "./routes/route.js";
 
 const app = express();
 
@@ -19,6 +21,8 @@ app.use("/auth", authRoutes); // /auth/register, /auth/login etc.
 app.use("/rides", rideRoutes); // /rides/create
 app.use("/users", userRoutes);
 app.use("/saved_rides", savedRidesRouter);
+app.use("/geocode", geocodeRoute);
+app.use("/route", routeRouter);
 
 // Optional test route
 app.get("/", (req, res) => {
