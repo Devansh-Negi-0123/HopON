@@ -2,13 +2,12 @@ export default function DashboardFooter() {
   return (
     <footer className="w-full bg-white dark:bg-gray-200 p-4 shadow mt-auto border-r">
       <p className="text-xs text-center text-gray-500 dark:text-gray-400 mb-3">
-        © 2019–2022{" "}
+        © 2025–2026{" "}
         <a
-          href="https://flowbite.com/"
-          target="_blank"
+          href="#"
           className="hover:underline"
         >
-          Flowbite.com
+          HopON.com
         </a>
       </p>
 
