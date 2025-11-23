@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import sideimage from "../../assets/sideimage.png";
 
 export default function CtaSection() {
   return (
@@ -9,25 +10,24 @@ export default function CtaSection() {
         {/* Light mode image */}
         <img
           className="w-full dark:hidden"
-          src="https://flowbite.s3.amazonaws.com/blocks/marketing-ui/cta/cta-dashboard-mockup.svg"
+          src={sideimage}
           alt="dashboard image"
         />
 
         {/* Dark mode image */}
         <img
           className="w-full hidden dark:block"
-          src="https://flowbite.s3.amazonaws.com/blocks/marketing-ui/cta/cta-dashboard-mockup-dark.svg"
+          src={sideimage}
           alt="dashboard image"
         />
 
         <div className="mt-4 md:mt-0">
           <h2 className="mb-4 text-4xl tracking-tight font-extrabold text-gray-900 dark:text-white">
-            Let's create more tools and ideas that bring us together.
+          Travel together and reduce your carbon footprint.
           </h2>
 
           <p className="mb-6 font-light text-gray-500 md:text-lg dark:text-gray-400">
-            Flowbite helps you connect with friends and communities of people who share your interests.
-            Connecting with your friends and family as well as discovering new ones is easy with features like Groups.
+          HopON helps you find rides, share your route, and connect with people going your way. Post your ride, join one, and travel with confidence. It helps you share rides with people heading in the same direction so you save fuel and the environment.
           </p>
 
           <Link to="/register">

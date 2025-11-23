@@ -1,5 +1,6 @@
 import React from 'react';
 
+
 export default function Team() {
   return (
     <section className="bg-white dark:bg-gray-900">
@@ -11,7 +12,7 @@ export default function Team() {
             Our Team
           </h2>
           <p className="font-light text-gray-500 lg:mb-16 sm:text-xl dark:text-gray-400">
-            Explore the whole collection of open-source web components and elements built with the utility classes from Tailwind
+            A small group with a shared goal: make daily travel easier, affordable, and more social.
           </p>
         </div>
         

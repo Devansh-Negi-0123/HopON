@@ -3,6 +3,7 @@ import axios from "axios";
 import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../../context/AuthContext";
+import HopON from "../../assets/HopON.jpeg";
 
 export default function Register() {
   const { setIsRegistered } = useContext(AuthContext);
@@ -59,10 +60,10 @@ export default function Register() {
         <a href="#" className="flex items-center mb-6 text-2xl font-semibold text-gray-900 dark:text-white">
           <img
             className="w-8 h-8 mr-2"
-            src="https://flowbite.s3.amazonaws.com/blocks/marketing-ui/logo.svg"
+            src={HopON}
             alt="logo"
           />
-          Flowbite
+          HopON
         </a>
 
         <div className="w-full bg-white rounded-lg shadow dark:border dark:bg-gray-800 dark:border-gray-700 p-6 sm:p-8">
