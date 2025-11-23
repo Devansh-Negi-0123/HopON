@@ -112,4 +112,23 @@ router.post("/byIds", async (req, res) => {
   }
 });
 
+// Get single ride by ID
+router.get("/:id", (req, res) => {
+  const rideId = req.params.id;
+
+  const sql = "SELECT * FROM rides WHERE id = ?";
+  db.query(sql, [rideId], (err, results) => {
+    if (err) {
+      console.error("FETCH SINGLE RIDE ERROR:", err.sqlMessage || err.message);
+      return res.status(500).json({ message: "Database error" });
+    }
+
+    if (results.length === 0) {
+      return res.status(404).json({ message: "Ride not found" });
+    }
+
+    return res.json(results[0]); // return single ride object
+  });
+});
+
 export default router;

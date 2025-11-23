@@ -1,10 +1,10 @@
 import { useState, useEffect, useContext } from "react";
 import { AuthContext } from "../context/AuthContext";
-import { useLocation, useNavigate } from "react-router-dom"; // ⬅️ import useNavigate
+import { useLocation, useNavigate } from "react-router-dom";
 
 export default function SearchRides() {
   const { user } = useContext(AuthContext);
-  const navigate = useNavigate(); // ⬅️ initialize navigate
+  const navigate = useNavigate();
   const [rides, setRides] = useState([]);
   const [savedRideIds, setSavedRideIds] = useState([]);
   const [searchParams, setSearchParams] = useState({
@@ -17,7 +17,9 @@ export default function SearchRides() {
   const location = useLocation();
   const searchParamsFromURL = new URLSearchParams(location.search);
   const showSavedOnly = searchParamsFromURL.get("saved") === "true";
+  const showBookedOnly = searchParamsFromURL.get("booked") === "true";
 
+  // fetch all rides based on search params
   const fetchRides = async () => {
     try {
       const query = new URLSearchParams();
@@ -39,10 +41,10 @@ export default function SearchRides() {
           to: ride.destination,
           date: ride.date ? ride.date.split("T")[0] : "",
           time: ride.time,
-          price: ride.price, // store as number, append ₹ later
+          price: ride.price,
           seats: ride.seats,
           driver: ride.driver_name || `Driver ID: ${ride.user_id} • ⭐ 4.9`,
-          carModel: ride.carModel || "N/A",  // optional fields for RideInfo
+          carModel: ride.carModel || "N/A",
           rating: ride.rating || 4.9,
         }))
       );
@@ -51,6 +53,7 @@ export default function SearchRides() {
     }
   };
 
+  // fetch saved rides for user
   const fetchSavedRides = async () => {
     if (!user?.id) return;
     try {
@@ -83,8 +86,41 @@ export default function SearchRides() {
     }
   };
 
+  // fetch booked rides for user
+  const fetchBookedRides = async () => {
+    if (!user?.id) return;
+    try {
+      const res = await fetch(`http://localhost:5000/bookings/${user.id}`);
+      const data = await res.json();
+
+      if (!data.length) {
+        setRides([]);
+        return;
+      }
+
+      const formattedRides = data.map((ride) => ({
+        id: ride.ride_id,
+        from: ride.startLocation,
+        to: ride.destination,
+        date: ride.date ? ride.date.split("T")[0] : "",
+        time: ride.time,
+        price: ride.price,
+        seats: ride.seats,
+        driver: ride.driver_name,
+        carModel: ride.carModel || "N/A",
+        rating: ride.rating || 4.9,
+      }));
+
+      setRides(formattedRides);
+    } catch (err) {
+      console.error("Error fetching booked rides:", err);
+    }
+  };
+
+  // decide which rides to fetch on load
   useEffect(() => {
     if (showSavedOnly) fetchSavedRides();
+    else if (showBookedOnly) fetchBookedRides();
     else fetchRides();
   }, [user, location]);
 
@@ -127,12 +163,18 @@ export default function SearchRides() {
       id="search-rides"
       className="h-[calc(100vh-4rem)] fixed right-0 w-full md:w-3/4 overflow-y-auto p-6 bg-gray-50 text-gray-800 antialiased"
     >
-      <h2 className="text-3xl font-bold">Search Rides</h2>
+      <h2 className="text-3xl font-bold">
+        {showSavedOnly ? "Saved Rides" : showBookedOnly ? "Booked Rides" : "Search Rides"}
+      </h2>
       <p className="text-gray-600 mt-1">
-        Enter your route and date to explore the most suitable rides.
+        {showSavedOnly
+          ? "View all your saved rides."
+          : showBookedOnly
+          ? "View all rides you have booked."
+          : "Enter your route and date to explore the most suitable rides."}
       </p>
 
-      {!showSavedOnly && (
+      {!showSavedOnly && !showBookedOnly && (
         <form className="mt-6 grid grid-cols-1 md:grid-cols-5 gap-4" onSubmit={handleSearch}>
           <input
             type="text"
@@ -200,7 +242,6 @@ export default function SearchRides() {
             </div>
 
             <div className="flex gap-3 mt-3">
-              {/* ⬅️ UPDATED VIEW BUTTON */}
               <button
                 onClick={() => navigate("/dashboard/ride-info", { state: ride })}
                 className="px-4 py-2 rounded-xl bg-indigo-600 text-white text-sm font-medium hover:bg-indigo-700"
@@ -208,16 +249,18 @@ export default function SearchRides() {
                 View
               </button>
 
-              <button
-                onClick={() => handleSaveToggle(ride.id)}
-                className={`px-4 py-2 rounded-xl text-sm font-medium ${
-                  savedRideIds.includes(ride.id)
-                    ? "border bg-gray-100 hover:bg-gray-200"
-                    : "bg-indigo-600 text-white hover:bg-indigo-700"
-                }`}
-              >
-                {savedRideIds.includes(ride.id) ? "Unsave" : "Save"}
-              </button>
+              {!showBookedOnly && (
+                <button
+                  onClick={() => handleSaveToggle(ride.id)}
+                  className={`px-4 py-2 rounded-xl text-sm font-medium ${
+                    savedRideIds.includes(ride.id)
+                      ? "border bg-gray-100 hover:bg-gray-200"
+                      : "bg-indigo-600 text-white hover:bg-indigo-700"
+                  }`}
+                >
+                  {savedRideIds.includes(ride.id) ? "Unsave" : "Save"}
+                </button>
+              )}
             </div>
           </div>
         ))}

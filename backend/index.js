@@ -1,4 +1,3 @@
-// index.js
 import express from "express";
 import cors from "cors";
 
@@ -9,6 +8,7 @@ import userRoutes from "./routes/users.js";
 import savedRidesRouter from "./routes/savedRides.js";
 import geocodeRoute from "./routes/geocode.js";
 import routeRouter from "./routes/route.js";
+import bookingsRouter from "./routes/bookings.js"; // ✅ use same name here
 
 const app = express();
 
@@ -17,12 +17,13 @@ app.use(cors());
 app.use(express.json()); // for parsing JSON bodies
 
 // Routes
-app.use("/auth", authRoutes); // /auth/register, /auth/login etc.
-app.use("/rides", rideRoutes); // /rides/create
+app.use("/auth", authRoutes);
+app.use("/rides", rideRoutes);
 app.use("/users", userRoutes);
 app.use("/saved_rides", savedRidesRouter);
 app.use("/geocode", geocodeRoute);
 app.use("/route", routeRouter);
+app.use("/bookings", bookingsRouter); // ✅ now matches import
 
 // Optional test route
 app.get("/", (req, res) => {
